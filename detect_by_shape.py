@@ -38,7 +38,6 @@ background = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
 circle_center = (len(background[0])//2, len(background)//2)
 circle_radius = len(background)//2
 
-
 cap = cv2.VideoCapture(input_file)
 # visina i sirina video frejma
 frame_width = int(cap.get(3))
