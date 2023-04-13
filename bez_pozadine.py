@@ -9,7 +9,7 @@ import math
 from PIL import Image, ImageDraw
 import hungarian
 
-input_file = '2.mp4'
+input_file = '10.mp4'
 
 #izdvajanje pozadine od muva
 def get_background(file_path):
@@ -97,6 +97,10 @@ while (cap.isOpened()):
         # pojedi one najmanje linije koje su ostale
         mask = cv2.erode(mask, kernel, iterations = 1)
 
+        plt.figure(figsize=(15,15))
+        plt.imshow(mask, cmap = "gray")
+        plt.show()
+
         # pronadji sve konture i sortiraj ih
         cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
@@ -140,7 +144,7 @@ while (cap.isOpened()):
         #moze da se optimizuje vrv nekim pokazivacima al nisam strucan za piton, ostavljam mayi da se igra
         for i in range(fly_count):
             for j in range(i+1, fly_count):
-                if distance(flies_prev[i],flies_prev[j]) < 20:
+                if distance(flies_prev[i],flies_prev[j]) < 1000:
                     interaction_count[i] += 1
                     interaction_count[j] += 1
                     break
