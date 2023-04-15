@@ -6,6 +6,12 @@ import numpy as np
 import get_background as gb
 import image_processing as imp
 
+# PARAMETRI KOJE TREBA PODESITI
+# uvedi limiting circle
+# IMA IH 5 (1-5)
+
+
+
 # video path
 input_file = '../3.mp4'
 
@@ -19,9 +25,14 @@ frame_height = int(cap.get(4))
 
 # Define the templates for the ellipse shape
 templates = []
+
+# 1 - KOLIKO ROTIRAMO ELIPSU
 for angle in range(0, 181, 10):
     M = cv2.getRotationMatrix2D((25, 25), angle, 1)
-    template = cv2.ellipse(np.zeros((50,50), np.uint8), (25,25), (6,3), 0, 0, 360, 255, -1)
+
+    # 2 - OVO 100,100 NE ZNAM TACNO STA JE 
+    # 3 - 6,3 VELICINA MUVE
+    template = cv2.ellipse(np.zeros((100,100), np.uint8), (25,25), (6,3), 0, 0, 360, 255, -1)
     templates.append(cv2.warpAffine(template, M, (50, 50)))
 
 # keep track of detected objects
@@ -39,18 +50,21 @@ while (cap.isOpened()):
     # if the frame exists
     if ret == True:
         
+        # 4 - NACIN PROCESIRANJA SLIKE - DODATI KRUZNICU
         gray = imp.image_processing(img, background)
 
         for template_idx, template in enumerate(templates):
             res = cv2.matchTemplate(gray, template, cv2.TM_CCOEFF_NORMED)
-            loc = np.where(res >= 0.5)
+
+            # 5 - VEROVATNOCA PREKLAPANJA (KORELACIJA MUVE I ELIPSE)
+            loc = np.where(res >= 0.8)
             for pt in zip(*loc[::-1]):
                 # check if the detected object has already been found in a previous template
-                #detected_objs.append(pt)
-                #cv2.ellipse(img, (pt[0]+25, pt[1]+25), (5,5), 0, 0, 360, (0, 255, 0), 2)
-                if not any(np.allclose(pt, obj, atol = 12) for obj in detected_objs):
-                    detected_objs.append(pt)
-                    cv2.ellipse(img, (pt[0]+25, pt[1]+25), (5,5), 0, 0, 360, (0, 255, 0), 2)
+                detected_objs.append(pt)
+                cv2.ellipse(img, (pt[0]+25, pt[1]+25), (5,5), 0, 0, 360, (0, 255, 0), 2)
+                #if not any(np.allclose(pt, obj, atol = 12) for obj in detected_objs):
+                #    detected_objs.append(pt)
+                #    cv2.ellipse(img, (pt[0]+25, pt[1]+25), (5,5), 0, 0, 360, (0, 255, 0), 2)
         
         print(len(detected_objs))
         # Display the results
